@@ -6,30 +6,29 @@
 
 #set up empty list for output 
 output <- vector(mode="numeric")
-answer <- vector( mode="logical", length=1L)
+answer <- vector( mode="logical", length = 1L)
   # write function name with inputs dir= directory and col = user-specified
   #column for the calculations
-cvCalc <- function(dir, col)
+cvCalc <- function(dir, col){
+  #list files in directory
+  files <- list.files(dir, all.files = FALSE, include.dirs = FALSE, full.names = TRUE)
   #for loop to iterate calculations in each file
     #read file
     #calculate the coefficient of variation
-for (file in dir) {
-  data <- read.table("file", header=TRUE,sep=",",stringsAsFactors=FALSE)
+for (i in files) {
+  data <- read.table(i, header=FALSE,sep=",", stringsAsFactors = TRUE)
   #if-else statement: for files with at least 50 observations, run the code 
-  if (length(data[,col]) >= 50) {
-    cvVal <- sd((data[, col]))/mean(data[,col])
-    output<- append(output, cvCalc)
-    return(output)
+  if (nrow(data) < 50) {
     # for files with fewer than 50 observations, print warning, if they want to 
-      #continue they can, if not, loop breaks
-  } else if (length(data[,col]) < 50 ) {
+      #continue they can, if not, the loop breaks
   print("Warning: less than 50 observations")
   answer <-readline("Would you like to continue anyway? Type TRUE to continue or FALSE to stop")
-  if (answer=="TRUE") {
-    cvVal <- sd((data[, col]))/mean(data[,col])
-    output<- append(output, cvCalc)
-  } else {
-    break
+   if (answer!="TRUE") {
+   next
+     }
   }
+  cvVal <- sd((data[, col]), na.rm = TRUE)/mean(data[, col], na.rm = TRUE)
+  output<- append(output, cvVal)
 }
+  return(output)
 }
